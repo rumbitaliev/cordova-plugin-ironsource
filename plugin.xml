@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cordova-plugin-ironsource"
+    version="0.0.1">
+    <name>Cordova plugin for ironsource</name>
+    <description></description>
+    <license>MIT</license>
+    <keywords></keywords>
+    <repo>https://github.com/rumb/cordova-plugin-ironsource.git</repo>
+    <issue>https://github.com/rumb/cordova-plugin-ironsource/issues</issue>
+
+    <!-- android -->
+    <platform name="android">
+      <js-module src="www/plugin.js" name="plugin">
+        <runs/>
+
+        <!-- This is the window variable name you want, like window.MyCordovaPlugin -->
+        <clobbers target="IronsSource" />
+      </js-module>
+      <config-file target="res/xml/config.xml" parent="/*">
+        <feature name="IronSource">
+          <param name="android-package" value="com.evaphone.IronSourcePlugin" />
+          <param name="onload" value="true" />
+        </feature>
+      </config-file>
+
+      <framework src="src/android/plugin.gradle" custom="true" type="gradleReference" />
+      <framework src="com.ironsource.sdk:mediationsdk:6.5.1@jar" />
+      <framework src="com.google.android.gms:play-services:+" />
+
+      <source-file src="src/android/com/evaphone/IronSourcePlugin.java" target-dir="src/com/evaphone/" />
+
+      <config-file target="AndroidManifest.xml" parent="/*/application">
+            <meta-data android:name="com.google.android.gms.version"
+                android:value="@integer/google_play_services_version" />
+
+	    <activity
+        	android:name="com.ironsource.sdk.controller.ControllerActivity"
+                android:configChanges="orientation|screenSize"
+                android:hardwareAccelerated="true" />
+	    <activity
+        	android:name="com.ironsource.sdk.controller.InterstitialActivity"
+                android:configChanges="orientation|screenSize"
+                android:hardwareAccelerated="true"
+                android:theme="@android:style/Theme.Translucent" />
+	    <activity
+        	android:name="com.ironsource.sdk.controller.OpenUrlActivity"
+                android:configChanges="orientation|screenSize"
+	        android:hardwareAccelerated="true"
+    	    android:theme="@android:style/Theme.Translucent" />
+      </config-file>
+      <config-file target="AndroidManifest.xml" parent="/*">
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+      </config-file>
+
+
+    </platform>
+</plugin>

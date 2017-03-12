@@ -1,0 +1,11 @@
+{
+  "name": "cordova-plugin-ironsource",
+  "version": "0.0.1",
+  "cordova": {
+    "id": "cordova-plugin-cordova-plugin-ironsource",
+    "platforms": [
+      "android"
+    ]
+  },
+  "description": "Cordova plugin for ironsource"
+}
