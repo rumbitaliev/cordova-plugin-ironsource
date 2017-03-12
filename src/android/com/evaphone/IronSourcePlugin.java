@@ -36,10 +36,12 @@ public class IronSourcePlugin extends CordovaPlugin implements RewardedVideoList
 
   public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
-    if(action.equals("init")) {
+    if(action.equals("subscribeOnNotifications")) {
+      return this.subscribeOnNotifications(callbackContext);
+    } else if(action.equals("init")) {
       String appKey = args.getString(0);
       String userId = args.getString(1);
-      return this.init(appKey, userId, callbackContext);
+      return this.init(appKey, userId);
     } else if(action.equals("showRewardedVideo")) {
       String placementName = null;
       if (args.length() == 1) {
@@ -48,20 +50,20 @@ public class IronSourcePlugin extends CordovaPlugin implements RewardedVideoList
       return this.showRewardedVideo(placementName);
     } else if(action.equals("getRewardedVideoPlacementInfo")) {
       String placementName = args.getString(0);
-      return this.getRewardedVideoPlacementInfo(placementName);
+      return this.getRewardedVideoPlacementInfo(placementName, callbackContext);
     } else if(action.equals("isRewardedVideoPlacementCapped")) {
       String placementName = args.getString(0);
-      return this.isRewardedVideoPlacementCapped(placementName);
+      return this.isRewardedVideoPlacementCapped(placementName, callbackContext);
     } else if(action.equals("setDynamicUserId")) {
       String userId = args.getString(0);
       return this.setDynamicUserId(userId);
     } else if(action.equals("loadInterstitial")) {
       return this.loadInterstitial();
     } else if(action.equals("isInterstitialReady")) {
-      return this.isInterstitialReady();
+      return this.isInterstitialReady(callbackContext);
     } else if(action.equals("getInterstitialPlacementInfo")) {
       String placementName = args.getString(0);
-      return this.getInterstitialPlacementInfo(placementName);
+      return this.getInterstitialPlacementInfo(placementName, callbackContext);
     } else if(action.equals("showInterstitial")) {
       String placementName = null;
       if (args.length() == 1) {
@@ -75,13 +77,17 @@ public class IronSourcePlugin extends CordovaPlugin implements RewardedVideoList
       }
       return this.showOfferwall(placementName);
     }
-    return true;
+    return false;
   }
 
-  private boolean init(String appKey, String userId, CallbackContext callbackContext) {
+  private boolean subscribeOnNotifications(CallbackContext callbackContext) {
     if (eventContext == null) {
       eventContext = callbackContext;
     }
+    return true;
+  }
+
+  private boolean init(String appKey, String userId) {
     IronSource.setRewardedVideoListener(this);
     IronSource.setOfferwallListener(this);
     SupersonicConfig.getConfigObj().setClientSideCallbacks(true);
@@ -96,7 +102,7 @@ public class IronSourcePlugin extends CordovaPlugin implements RewardedVideoList
     return true;
   }
 
-  private boolean getRewardedVideoPlacementInfo(String placementName) {
+  private boolean getRewardedVideoPlacementInfo(String placementName, CallbackContext callbackContext) {
     Placement placement = IronSource.getRewardedVideoPlacementInfo(placementName);
     if (placement != null) {
       JSONObject event = new JSONObject();
@@ -106,21 +112,21 @@ public class IronSourcePlugin extends CordovaPlugin implements RewardedVideoList
       } catch (JSONException e) {
         e.printStackTrace();
       }
-      eventContext.success(event);
+      callbackContext.success(event);
     }
     else {
-      eventContext.error("placementName_invalid");
+      callbackContext.error("placementName_invalid");
     }
     return true;
   }
 
-  private boolean isRewardedVideoPlacementCapped(String placementName) {
-    boolean isCapped = IronSource.isRewardedVideoPlacementCapped("placementName");
+  private boolean isRewardedVideoPlacementCapped(String placementName, CallbackContext callbackContext) {
+    boolean isCapped = IronSource.isRewardedVideoPlacementCapped(placementName);
     if (isCapped) {
-      eventContext.error("capped");
+      callbackContext.error("capped");
     }
     else {
-      eventContext.success("ok");
+      callbackContext.success("ok");
     }
     return true;
   }
@@ -135,18 +141,18 @@ public class IronSourcePlugin extends CordovaPlugin implements RewardedVideoList
     return true;
   }
 
-  private boolean isInterstitialReady() {
+  private boolean isInterstitialReady(CallbackContext callbackContext) {
     boolean isReady = IronSource.isInterstitialReady();
     if (isReady) {
-      eventContext.success("ready");
+      callbackContext.success("ready");
     }
     else {
-      eventContext.error("not_ready");
+      callbackContext.error("not_ready");
     }
     return true;
   }
 
-  private boolean getInterstitialPlacementInfo(String placementName) {
+  private boolean getInterstitialPlacementInfo(String placementName, CallbackContext callbackContext) {
     InterstitialPlacement placement = IronSource.getInterstitialPlacementInfo(placementName);
     if (placement != null) {
       JSONObject event = new JSONObject();
@@ -156,10 +162,10 @@ public class IronSourcePlugin extends CordovaPlugin implements RewardedVideoList
       } catch (JSONException e) {
         e.printStackTrace();
       }
-      eventContext.success(event);
+      callbackContext.success(event);
     }
     else {
-      eventContext.error("placementName_invalid");
+      callbackContext.error("placementName_invalid");
     }
     return true;
   }
